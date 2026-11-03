@@ -1,6 +1,6 @@
 # ARAO 核心实现
 
-Adaptive Rhetorical Adversarial Optimization（ARAO）的可复现核心实现：在轴对齐的修辞策略空间上做无梯度搜索，并用语义门控保证改写不与原文矛盾，从而支持「发现 → 诊断 → 定向修复」的闭环。
+Adaptive Rhetorical Adversarial Optimization（ARAO）的可复现核心实现：「发现 → 诊断 → 定向修复」。
 
 本仓库包含方法与流程的核心代码，以及论文实验所用的 PolitiFact 标注子集（`data/politifact.jsonl`）。
 
