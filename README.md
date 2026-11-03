@@ -22,32 +22,6 @@ python -m pip install -r requirements.txt
 - JSONL：每行 `{"id": "...", "text": "...", "label": 0}`。
 - 标签必须是从 0 开始的整数类别 ID。可用全局参数 `--text-column`、`--label-column` 指定其他列名。
 
-CLI 需要按 split 分开的文件，把附带的数据拆开：
-
-```bash
-python - <<'PY'
-import json, pathlib
-rows = [json.loads(l) for l in open("data/politifact.jsonl", encoding="utf-8")]
-out = pathlib.Path("data/politifact"); out.mkdir(exist_ok=True)
-for split in ("train", "dev", "test"):
-    with (out / f"{split}.jsonl").open("w", encoding="utf-8") as f:
-        for r in rows:
-            if r["split"] == split:
-                f.write(json.dumps({k: r[k] for k in ("id", "text", "label")}, ensure_ascii=False) + "\n")
-PY
-```
-
-训练入口只接收 train/dev，checkpoint 按 dev ROC-AUC 选择；缺少数据或无效标签会直接报错。**train/dev 文本重叠默认也会报错**——官方 PolitiFact 划分里有 25 条标题跨 split 重复（多为 `Transcripts` 这类采集噪声），要直接复现该划分需显式放开：
-
-```bash
-python -m arao train --allow-overlap --mode vanilla --train data/politifact/train.jsonl --dev data/politifact/dev.jsonl --output runs/vanilla_s42
-```
-
-若要严格无重叠，可先按规范化标题去重（剩 983 条）再重新划分。`scripts/prepare_politifact.py` 提供了这样的示例（去重 + 分层），输入是 FakeNewsNet 的 `politifact_real.csv` / `politifact_fake.csv`：
-
-```bash
-python scripts/prepare_politifact.py --real politifact_real.csv --fake politifact_fake.csv --output data/politifact
-```
 
 
 ## 快速开始
