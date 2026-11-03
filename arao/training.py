@@ -13,7 +13,8 @@ from .types import Example
 
 def fit(detector: TrainableDetector, train: Sequence[Example], dev: Sequence[Example],
         output: str, epochs: int = 3, batch_size: int = 8, seed: int = 42,
-        engine: Optional[ARAO] = None, attack_fraction: float = 1.0) -> dict:
+        engine: Optional[ARAO] = None, attack_fraction: float = 1.0,
+        allow_overlap: bool = False) -> dict:
     """Clean updates plus optional per-example online Algorithm 1 updates.
 
     attack_fraction is the fraction of original examples selected per clean
@@ -24,7 +25,7 @@ def fit(detector: TrainableDetector, train: Sequence[Example], dev: Sequence[Exa
         raise ValueError("Invalid training sizes, epochs, batch size or attack fraction.")
     if engine is not None and engine.detector is not detector:
         raise ValueError("Online search and training must share the same detector instance.")
-    require_disjoint(train, dev)
+    require_disjoint(train, dev, allow_overlap)
     rng, history, best_auc = np.random.default_rng(seed), [], -float("inf")
     for epoch in range(epochs):
         order = rng.permutation(len(train))

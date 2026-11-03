@@ -211,6 +211,12 @@ class SearchTests(unittest.TestCase):
 
 
 class DataAndEvaluationTests(unittest.TestCase):
+    def test_overlap_is_rejected_unless_explicitly_accepted(self):
+        train, dev = [Example("a", "Same Text", 1)], [Example("b", "same  text", 0)]
+        with self.assertRaises(ValueError):
+            require_disjoint(train, dev)
+        require_disjoint(train, dev, allow_overlap=True)
+
     def test_nll_uses_true_class_and_is_finite(self):
         losses = negative_log_true_probability(np.array([[0.8, 0.2], [1.0, 0.0]]), 1)
         self.assertAlmostEqual(losses[0], -np.log(0.2))

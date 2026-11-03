@@ -14,8 +14,10 @@ outputs/
 # Local model/endpoint overrides: keep machine-specific substitutes out of the repo
 configs/*_local.json
 
-# Datasets are not redistributed; obtain them from the original sources
-data/
+# Local datasets stay out; the released PolitiFact subset is tracked explicitly
+data/*
+!data/politifact.jsonl
+!data/README.md
 *.csv.tmp
 
 # Editors / OS

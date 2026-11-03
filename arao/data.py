@@ -39,10 +39,24 @@ def load_examples(path: str, text_column: str = "text", label_column: str = "lab
     return examples
 
 
-def require_disjoint(train: Sequence[Example], dev: Sequence[Example]) -> None:
+def require_disjoint(train: Sequence[Example], dev: Sequence[Example],
+                     allow_overlap: bool = False) -> None:
+    """Refuse train/dev text overlap unless it is explicitly accepted.
+
+    The official PolitiFact split carries 25 cross-split duplicate headlines
+    (mostly scraping boilerplate such as "Transcripts"), so reproducing that
+    split requires opting in rather than silently leaking.
+    """
     normalize = lambda text: " ".join(text.casefold().split())
-    if {normalize(e.text) for e in train} & {normalize(e.text) for e in dev}:
-        raise ValueError("Train/dev text overlap detected; use separate splits.")
+    shared = {normalize(e.text) for e in train} & {normalize(e.text) for e in dev}
+    if not shared:
+        return
+    if not allow_overlap:
+        raise ValueError(
+            f"Train/dev text overlap detected ({len(shared)} distinct texts); "
+            "use separate splits or pass --allow-overlap to accept it."
+        )
+    print(f"warning: accepting {len(shared)} train/dev text overlaps (--allow-overlap)", flush=True)
 
 
 def save_json(path: str, value) -> None:

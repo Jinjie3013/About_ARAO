@@ -20,6 +20,8 @@ def arguments():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--text-column", default="text")
     parser.add_argument("--label-column", default="label")
+    parser.add_argument("--allow-overlap", action="store_true",
+                        help="Accept train/dev text overlap (the official PolitiFact split needs this).")
     sub = parser.add_subparsers(dest="command", required=True)
     for command in ("train", "attack", "diagnose", "probe", "repair"):
         p = sub.add_parser(command)
@@ -80,7 +82,7 @@ def main():
 
     if args.command in {"train", "repair"}:
         train, dev = load(args.train), load(args.dev)
-        require_disjoint(train, dev)
+        require_disjoint(train, dev, args.allow_overlap)
         if set(e.label for e in dev) != set(range(config.models.num_labels)):
             raise ValueError("The dev split must contain every configured class.")
     else:
@@ -97,7 +99,8 @@ def main():
 
     if args.command == "train":
         summary = fit(detector, train, dev, str(output), config.run.epochs,
-                      config.models.batch_size, args.seed, engine, config.run.attack_fraction)
+                      config.models.batch_size, args.seed, engine, config.run.attack_fraction,
+                      args.allow_overlap)
     elif args.command == "attack":
         results = []
         trace = output / "results.jsonl"
@@ -120,7 +123,7 @@ def main():
         save_examples(str(output / "augmentation.jsonl"), rewrites)
         save_json(str(output / "augmentation_summary.json"), generation)
         summary = fit(detector, train + rewrites, dev, str(output), config.run.repair_epochs,
-                      config.models.batch_size, args.seed)
+                      config.models.batch_size, args.seed, allow_overlap=args.allow_overlap)
         summary["augmentation"] = generation
     if chat is not None:
         summary["llm_usage"] = dict(chat.usage)
