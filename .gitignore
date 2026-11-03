@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Experiment outputs (local paths, checkpoints, traces)
+runs/
+out/
+outputs/
+*.log
+
+# Local model/endpoint overrides: keep machine-specific substitutes out of the repo
+configs/*_local.json
+
+# Datasets are not redistributed; obtain them from the original sources
+data/
+*.csv.tmp
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.pem

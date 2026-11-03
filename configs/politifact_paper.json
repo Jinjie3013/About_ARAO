@@ -1,0 +1,43 @@
+{
+  "models": {
+    "detector_name": "bert-base-uncased",
+    "num_labels": 2,
+    "detector_device": "auto",
+    "nli_name": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
+    "nli_device": "cpu",
+    "contradiction_index": null,
+    "batch_size": 8,
+    "max_length": 512,
+    "nli_max_length": 512,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0
+  },
+  "llm": {
+    "model": "gpt-4o-mini",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_tokens": 1024,
+    "disable_thinking": false,
+    "api_key_env": "OPENAI_API_KEY",
+    "base_url_env": "OPENAI_BASE_URL"
+  },
+  "search": {
+    "population_size": 16,
+    "iterations": 8,
+    "mean_lr": 0.03,
+    "covariance_lr": 0.02,
+    "initial_std": 0.5,
+    "eigenvalue_floor": 0.000001,
+    "rank_norm": "unit"
+  },
+  "run": {
+    "domain": "misinformation",
+    "gate_threshold": 0.85,
+    "epochs": 3,
+    "attack_fraction": 0.1,
+    "repair_epochs": 2,
+    "repair_strength": 0.6,
+    "augmentation_ratio": 0.25
+  }
+}
